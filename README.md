@@ -8,14 +8,15 @@ Give every Claude Code session its own terminal background color, chosen by proj
 
 ## Install
 
-**As a Claude Code plugin** (named `terminal-tint`):
+**One command:**
 
-```
-/plugin marketplace add adamzaidi/claude-color
-/plugin install terminal-tint@terminal-tint
+```sh
+claude plugin install terminal-tint --marketplace adamzaidi/claude-color
 ```
 
-Then run `/claude-color setup` once. That adds the shell part, which tints the window at launch and puts your colors back when Claude exits.
+(Inside Claude Code you can also use `/plugin marketplace add adamzaidi/claude-color`, then `/plugin install terminal-tint@terminal-tint`.)
+
+`/claude-color <name>` works right away. To also have each window tint automatically when `claude` starts, run `/claude-color setup` once. It adds a small hook to `~/.zshrc`, so it asks first rather than doing it on its own.
 
 **Or from a clone:**
 
