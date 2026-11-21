@@ -101,12 +101,27 @@ _claude_color_rule_matches() {
   fi
 }
 
+# Split a rules line into REPLY=(pattern color). The color is the last field and
+# the pattern is everything before it, so paths with spaces ("Mobile Documents") work.
+# Returns 1 for blank lines, comments, and lines with only one field.
+_claude_color_parse_rule() {
+  local line=$1 pattern color
+  line=${line#"${line%%[![:space:]]*}"}; line=${line%"${line##*[![:space:]]}"}
+  [[ -z $line || $line == \#* ]] && return 1
+  color=${line##*[[:space:]]}; pattern=${line%[[:space:]]*}
+  pattern=${pattern%"${pattern##*[![:space:]]}"}
+  [[ $pattern == $line || -z $pattern ]] && return 1
+  reply=("$pattern" "$color")
+}
+
 # Override color for a key, if any (first matching rule wins).
 _claude_color_override() {
-  local key=$1 pattern color
+  local key=$1 line pattern color
+  local -a reply
   [[ -r $CLAUDE_COLOR_CONFIG ]] || return 1
-  while read -r pattern color _; do
-    [[ -z $pattern || $pattern == \#* || -z $color ]] && continue
+  while IFS= read -r line; do
+    _claude_color_parse_rule "$line" || continue
+    pattern=$reply[1]; color=$reply[2]
     if _claude_color_rule_matches "$pattern" "$key"; then
       print -r -- "$color"; return 0
     fi
