@@ -13,6 +13,7 @@
 #   CLAUDE_COLOR_CONFIG=<path>        overrides file (default ~/.config/claude-color/overrides)
 #   CLAUDE_COLOR_PALETTE=(...)        your own colors: "name=#hex" or "#hex"
 #   CLAUDE_COLOR_TEXT="#e6e6e6"       text color used while tinted
+#   CLAUDE_COLOR_ACCENT="#hex"        fixed bold/cursor color (default: derived per color)
 
 typeset -g CLAUDE_COLOR_HOME=${${(%):-%x}:P:h}
 : ${CLAUDE_COLOR_CONFIG:=$HOME/.config/claude-color/overrides}
@@ -175,15 +176,50 @@ end run
 EOF
 }
 
-# Paint background $1 on terminal $2.
+# Accent for a background: the same hue, light. Brighten until the strongest
+# channel hits 255, then blend halfway with white. Used for bold text and
+# the cursor, so headings stay readable and match the background.
+_claude_color_accent() {
+  [[ -n $CLAUDE_COLOR_ACCENT ]] && { print -r -- "$CLAUDE_COLOR_ACCENT"; return; }
+  local h=${1#\#} m c out="#"
+  local -a ch=( $((16#${h[1,2]})) $((16#${h[3,4]})) $((16#${h[5,6]})) )
+  m=${${(On)ch}[1]}; (( m < 1 )) && m=1
+  for c in $ch; do
+    out+=$(printf '%02x' $(( (c * 255 / m) * 55 / 100 + 255 * 45 / 100 )))
+  done
+  print -r -- "$out"
+}
+
+# Paint background $1 on terminal $2 (plus light text and a matching accent).
 _claude_color_apply() {
-  local hex=$1 dev=$2
+  local hex=$1 dev=$2 accent
+  accent=$(_claude_color_accent "$hex")
   if [[ $TERM_PROGRAM == Apple_Terminal ]]; then
     _claude_color_terminal_tab "$dev" "set background color of t to {$(_claude_color_16bit $hex)}
-            set normal text color of t to {$(_claude_color_16bit $CLAUDE_COLOR_TEXT)}" >/dev/null
+            set normal text color of t to {$(_claude_color_16bit $CLAUDE_COLOR_TEXT)}
+            set bold text color of t to {$(_claude_color_16bit $accent)}
+            set cursor color of t to {$(_claude_color_16bit $accent)}" >/dev/null
   else
-    printf '\e]11;%s\a\e]10;%s\a' "$hex" "$CLAUDE_COLOR_TEXT" > "$dev"
+    printf '\e]11;%s\a\e]10;%s\a\e]12;%s\a' "$hex" "$CLAUDE_COLOR_TEXT" "$accent" > "$dev"
   fi
+}
+
+# Terminal.app: current colors as "bg|text|bold|cursor".
+_claude_color_save() {
+  _claude_color_terminal_tab "$1" 'set out to ""
+            repeat with c in {background color of t, normal text color of t, bold text color of t, cursor color of t}
+              set out to out & (item 1 of c) & ", " & (item 2 of c) & ", " & (item 3 of c) & "|"
+            end repeat
+            return out'
+}
+
+_claude_color_restore() {
+  local -a c=( ${(s:|:)2} )
+  (( ${#c} >= 4 )) || return
+  _claude_color_terminal_tab "$1" "set background color of t to {${c[1]}}
+            set normal text color of t to {${c[2]}}
+            set bold text color of t to {${c[3]}}
+            set cursor color of t to {${c[4]}}" >/dev/null
 }
 
 # ---------------------------------------------------------------- wrapper
@@ -195,23 +231,16 @@ claude() {
   fi
 
   local dev=$TTY saved
-  if [[ $TERM_PROGRAM == Apple_Terminal ]]; then
-    saved=$(_claude_color_terminal_tab "$dev" \
-      'set b to background color of t
-            set f to normal text color of t
-            return ((item 1 of b) as text) & ", " & (item 2 of b) & ", " & (item 3 of b) & "|" & (item 1 of f) & ", " & (item 2 of f) & ", " & (item 3 of f)')
-  fi
+  [[ $TERM_PROGRAM == Apple_Terminal ]] && saved=$(_claude_color_save "$dev")
   _claude_color_apply "$(_claude_color_pick "$(_claude_color_key)")" "$dev"
 
   {
     CLAUDE_COLOR_ACTIVE=1 command claude "$@"
   } always {
     if [[ $TERM_PROGRAM == Apple_Terminal ]]; then
-      [[ $saved == *\|* ]] && _claude_color_terminal_tab "$dev" \
-        "set background color of t to {${saved%%|*}}
-            set normal text color of t to {${saved##*|}}" >/dev/null
+      _claude_color_restore "$dev" "$saved"
     else
-      printf '\e]111\a\e]110\a'  # back to the profile's colors
+      printf '\e]111\a\e]110\a\e]112\a'  # back to the profile's colors
     fi
   }
 }

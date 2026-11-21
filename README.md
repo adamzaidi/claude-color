@@ -39,7 +39,7 @@ Inside Claude Code, in the window you're working in:
 /claude-color reset           back to the automatic color
 ```
 
-The window changes right away, and the choice is saved for that project. Claude also tells you the matching built-in `/color` command, so the prompt bar can match the window.
+The window changes right away, and the choice is saved for that project. Bold text and the cursor get a light shade of the same hue (pale mint on forest, pale blue on navy), so headings stay readable. Claude also tells you the matching built-in `/color` command, so the prompt bar can match the window.
 
 | Group | Colors |
 | --- | --- |
@@ -85,11 +85,12 @@ Put these in `~/.zshrc` before the `source` line:
 | `CLAUDE_COLOR_PALETTE=(name=#hex ...)` | Use your own colors |
 | `CLAUDE_COLOR_GROUPS=("Label:name name" ...)` | Groups shown in the picker (max 4 colors each) |
 | `CLAUDE_COLOR_TEXT="#e6e6e6"` | Text color while tinted |
+| `CLAUDE_COLOR_ACCENT="#hex"` | Fixed bold and cursor color (default: a light shade of each background's hue) |
 | `CLAUDE_COLOR_CONFIG=path` | Use a different overrides file |
 
 ## Terminal support
 
-- **Terminal.app**: uses AppleScript on the tab that owns your shell, and saves and restores your exact colors. The first run asks to let Terminal control Terminal. Click Allow.
+- **Terminal.app**: uses AppleScript on the tab that owns your shell, and saves and restores your exact colors (background, text, bold and cursor). The first run asks to let Terminal control Terminal. Click Allow.
 - **iTerm2, Ghostty, kitty, WezTerm, VS Code**: uses standard OSC 10/11 escape codes and resets to your profile's colors on exit.
 
 ## Uninstall
