@@ -1,9 +1,12 @@
 #!/bin/zsh
 # UserPromptSubmit hook: applies "/claude-color <args>" (or "claude-color <args>")
-# the instant the prompt is submitted, then lets the prompt through with a note
-# so Claude just confirms in one line. Blocking would avoid the model turn, but
-# Claude Code labels every blocked prompt "blocked by hook", which reads like an
-# error. Set CLAUDE_COLOR_HOOK_BLOCK=1 to block anyway (no model turn).
+# the instant the prompt is submitted, then stops the prompt with continue:false so
+# there's no model turn (zero tokens). Claude Code shows it as
+# "Operation stopped by hook: <stopReason>"; that prefix is hard-coded, so the
+# stopReason is worded as a success ("Window is now slate (#1f2f3a)").
+# CLAUDE_COLOR_HOOK_REPLY=1: pass the prompt through and have Claude echo the result
+#   (no label, but costs a model turn).
+# CLAUDE_COLOR_HOOK_BLOCK=1: decision:block ("UserPromptSubmit operation blocked by hook:").
 # Every other prompt passes through untouched.
 input=$(cat)
 [[ $input == *'"prompt":"'(/|)'claude-color'* ]] || exit 0
@@ -36,13 +39,15 @@ else
     lines=( "${(@f)out}" ); first=${lines[1]%%  \[*}
     case ${args[1]} in
       accent|preview|list|ls|rules) msg=${(j: | :)lines} ;;
-      *) msg="Window: $first" ;;
+      *) msg="Window is now $first" ;;
     esac
   fi
 fi
 json() { local m=${1//\\/\\\\}; print -r -- "${m//\"/\\\"}"; }
 if [[ -n $CLAUDE_COLOR_HOOK_BLOCK ]]; then
   print -r -- "{\"decision\":\"block\",\"reason\":\"$(json "$msg")\",\"suppressOriginalPrompt\":true}"
+elif [[ -z $CLAUDE_COLOR_HOOK_REPLY ]]; then
+  print -r -- "{\"continue\":false,\"stopReason\":\"$(json "$msg")\"}"
 else
   ctx="claude-color hook: this command was already applied, and the result is: $msg -- Do not run any tools. Reply with exactly that result as one line, nothing else."
   print -r -- "{\"hookSpecificOutput\":{\"hookEventName\":\"UserPromptSubmit\",\"additionalContext\":\"$(json "$ctx")\"}}"
