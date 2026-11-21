@@ -50,6 +50,40 @@ typeset -gA CLAUDE_COLOR_PAIRS
 # Put bin/ on PATH for interactive shells.
 [[ :$PATH: == *:$CLAUDE_COLOR_HOME/bin:* ]] || path+=("$CLAUDE_COLOR_HOME/bin")
 
+# ---------------------------------------------------------------- completion
+
+# `claude-color <Tab>`: colors + commands; `accent <Tab>`: modes.
+_claude_color_complete() {
+  local -a names cmds
+  local e
+  for e in $CLAUDE_COLOR_PALETTE; do [[ $e == *=* ]] && names+=("${e%%=*}:${e#*=}"); done
+  cmds=('default:back to the automatic color'
+        'accent:bold-text color mode' 'preview:try a color without saving'
+        'list:show the palette' 'rules:show saved overrides')
+  if (( CURRENT == 2 )); then
+    _describe -t colors 'color' names
+    _describe -t commands 'command' cmds
+  elif [[ ${words[2]} == accent ]]; then
+    local -a modes=('pair:college football secondary colors' 'white:plain white'
+                    'complement:opposite hue' 'tint:same hue, lighter')
+    _describe -t modes 'accent mode' modes
+  elif [[ ${words[2]} == preview ]]; then
+    _describe -t colors 'color' names
+  fi
+}
+
+# Register once compinit has run (it may load after this file).
+_claude_color_compdef() {
+  (( $+functions[compdef] )) || return
+  compdef _claude_color_complete claude-color
+  add-zsh-hook -d precmd _claude_color_compdef 2>/dev/null
+}
+if [[ -o interactive ]]; then
+  autoload -Uz add-zsh-hook
+  _claude_color_compdef
+  (( $+functions[compdef] )) || add-zsh-hook precmd _claude_color_compdef
+fi
+
 # ---------------------------------------------------------------- picking
 
 # The project a directory belongs to: its git root, or the directory itself.

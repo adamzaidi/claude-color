@@ -35,8 +35,7 @@ Inside Claude Code, in the window you're working in:
 /claude-color poe             use a palette color
 /claude-color #2a2240         use any hex
 /claude-color something warm  describe it and Claude picks a color
-/claude-color next            cycle to the next palette color
-/claude-color reset           back to the automatic color
+/claude-color default         back to the automatic color
 ```
 
 Simple commands like these are applied by a prompt hook the instant you press Enter, and Claude just confirms in one line. Descriptions like "something warm" go to Claude to interpret. The window changes right away, and the choice is saved for that project. Bold text and the cursor take the secondary color of a college football team whose main color matches the background (Oregon yellow on forest, Navy gold on navy, LSU gold on poe). `/claude-color accent <mode>` switches to `complement` (vivid opposite hue), `tint` (same hue), `white`, or any hex, such as `'#d4b26a'`.
@@ -58,7 +57,12 @@ claude-color list         # palette with swatches
 claude-color dune         # set it (saved + applied now)
 claude-color preview '#203040'   # try it without saving
 claude-color accent complement   # bold/cursor: pair | white | complement | tint | #hex
-claude-color next | reset | rules
+claude-color default | rules
+```
+
+Tab completion works in zsh: `claude-color <Tab>` lists the colors and commands, and `claude-color accent <Tab>` lists the accent modes.
+
+```sh
 ```
 
 ## How the color is picked

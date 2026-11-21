@@ -20,14 +20,14 @@ source "${0:P:h}/../claude-color.zsh"
 # Only handle what's instant and unambiguous; anything else (e.g. "something
 # warmer") falls through to the /claude-color skill, where Claude interprets it.
 case ${args[1]:-} in
-  ""|next|reset|auto|list|ls|rules|status) (( ${#args} <= 1 )) || exit 0 ;;
+  ""|default|reset|auto|list|ls|rules|status) (( ${#args} <= 1 )) || exit 0 ;;
   accent|preview) (( ${#args} <= 2 )) || exit 0 ;;
   *) (( ${#args} == 1 )) && _claude_color_resolve "${args[1]}" >/dev/null || exit 0 ;;
 esac
 
 if (( ${#args} == 0 )); then
   names=(); for e in $CLAUDE_COLOR_PALETTE; do names+=(${e%%=*}); done
-  msg="Colors: ${(j:, :)names}. Type /claude-color <name>, a #hex, next, reset, or accent <pair|white|complement|tint>."
+  msg="Colors: ${(j:, :)names}. Type /claude-color <name>, a #hex, default, or accent <pair|white|complement|tint>."
 else
   out=$("$tool" "${args[@]}" 2>&1)
   if [[ $? -ne 0 ]]; then

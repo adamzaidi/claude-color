@@ -4,8 +4,7 @@
 #   claude-color                 show this project's color
 #   claude-color list            show the palette
 #   claude-color <name|#hex>     set this project's color (saved + applied now)
-#   claude-color next            switch to the next palette color
-#   claude-color reset           go back to the automatic color
+#   claude-color default         go back to the automatic color
 #   claude-color preview <c>     apply now without saving
 #   claude-color rules           print the overrides file
 #   claude-color accent <mode>   bold/cursor: pair, white, complement, tint, #hex
@@ -79,12 +78,7 @@ case ${1:-} in
       swatch $hex; printf '%s%-8s %s\n' "$mark" "$name" "$hex"
     done
     print "\nAny hex works too: claude-color '#223344'" ;;
-  next)
-    current=$(_claude_color_pick "$key"); i=1 n=${#CLAUDE_COLOR_PALETTE}
-    for (( j=1; j<=n; j++ )); do [[ ${${CLAUDE_COLOR_PALETTE[j]#*=}:l} == ${current:l} ]] && i=$j; done
-    hex=${CLAUDE_COLOR_PALETTE[$(( i % n + 1 ))]#*=}
-    save_rule $hex; paint $hex; status ;;
-  reset|auto)
+  default|reset|auto)
     save_rule ""; paint "$(_claude_color_pick "$key")"; status ;;
   preview)
     hex=$(_claude_color_resolve "${2:-}") || { print -u2 "Unknown color: ${2:-}  (try: claude-color list)"; exit 1; }
@@ -106,7 +100,7 @@ case ${1:-} in
   rules)
     [[ -r $CLAUDE_COLOR_CONFIG ]] && cat "$CLAUDE_COLOR_CONFIG" || print "(no overrides file)" ;;
   help|-h|--help)
-    sed -n '2,12s/^# \{0,1\}//p' "$0" ;;
+    sed -n '2,11s/^# \{0,1\}//p' "$0" ;;
   *)
     hex=$(_claude_color_resolve "$1") || { print -u2 "Unknown color: $1  (try: claude-color list)"; exit 1; }
     save_rule $hex; paint $hex; status ;;
