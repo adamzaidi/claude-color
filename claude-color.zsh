@@ -14,7 +14,7 @@
 #   CLAUDE_COLOR_PALETTE=(...)        your own colors: "name=#hex" or "#hex"
 #   CLAUDE_COLOR_TEXT="#e6e6e6"       text color used while tinted
 
-typeset -g CLAUDE_COLOR_HOME=${${(%):-%x}:A:h}
+typeset -g CLAUDE_COLOR_HOME=${${(%):-%x}:P:h}
 : ${CLAUDE_COLOR_CONFIG:=$HOME/.config/claude-color/overrides}
 : ${CLAUDE_COLOR_TEXT:=#e6e6e6}
 
@@ -24,6 +24,23 @@ typeset -ga CLAUDE_COLOR_PALETTE
   navy=#1b2a3d  plum=#2b1f3d   forest=#1a3328  walnut=#3a2a1a
   wine=#3a1c2a  teal=#16343a   olive=#2c3519   oxblood=#3b1f1f
   indigo=#24243f slate=#1f2f3a cocoa=#35281f   pine=#203a33
+)
+
+# Groups for the /claude-color picker ("Label:name name ..."). At most 4 names
+# each, because the picker shows 4 choices at a time.
+typeset -ga CLAUDE_COLOR_GROUPS
+(( ${#CLAUDE_COLOR_GROUPS} )) || CLAUDE_COLOR_GROUPS=(
+  "Blues & purples:navy slate indigo plum"
+  "Greens:forest pine olive teal"
+  "Warm:walnut cocoa wine oxblood"
+)
+
+# Closest color for Claude Code's built-in /color, which tints the prompt bar.
+typeset -gA CLAUDE_COLOR_BAR
+(( ${#CLAUDE_COLOR_BAR} )) || CLAUDE_COLOR_BAR=(
+  navy blue  slate blue  indigo purple  plum purple
+  forest green  pine green  olive green  teal cyan
+  walnut orange  cocoa orange  wine pink  oxblood red
 )
 
 # Put bin/ on PATH for interactive shells.
@@ -97,6 +114,25 @@ _claude_color_resolve() {
   return 1
 }
 
+# Nearest palette name to any hex (by RGB distance), for the /color mapping.
+_claude_color_nearest() {
+  local h=${1#\#} entry e best="" bestd=999999 d
+  local r=$((16#${h[1,2]})) g=$((16#${h[3,4]})) b=$((16#${h[5,6]}))
+  for entry in $CLAUDE_COLOR_PALETTE; do
+    [[ $entry == *=* ]] || continue
+    e=${${entry#*=}#\#}
+    d=$(( (r-16#${e[1,2]})**2 + (g-16#${e[3,4]})**2 + (b-16#${e[5,6]})**2 ))
+    (( d < bestd )) && { bestd=$d; best=${entry%%=*}; }
+  done
+  [[ -n $best ]] && print -r -- "$best"
+}
+
+# Matching /color value for a hex, if any.
+_claude_color_bar_for() {
+  local n; n=$(_claude_color_nearest "$1") || return 1
+  [[ -n ${CLAUDE_COLOR_BAR[$n]} ]] && print -r -- "${CLAUDE_COLOR_BAR[$n]}"
+}
+
 # ---------------------------------------------------------------- applying
 
 # "#rrggbb" -> "r, g, b" in Terminal.app's 16-bit scale.
@@ -168,7 +204,7 @@ claude() {
   _claude_color_apply "$(_claude_color_pick "$(_claude_color_key)")" "$dev"
 
   {
-    command claude "$@"
+    CLAUDE_COLOR_ACTIVE=1 command claude "$@"
   } always {
     if [[ $TERM_PROGRAM == Apple_Terminal ]]; then
       [[ $saved == *\|* ]] && _claude_color_terminal_tab "$dev" \

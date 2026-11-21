@@ -2,30 +2,36 @@
 
 Give every Claude Code session its own terminal background color, chosen by project.
 
-`cd` into a project and run `claude` as usual. The window tints to that project's color while Claude runs and goes back to normal when it exits. The same project always gets the same color, so you can tell windows apart at a glance.
+![demo](docs/demo.gif)
+
+`cd` into a project and run `claude` as usual. The window tints to that project's color while Claude runs and goes back to normal when it exits. The same project always gets the same color, so you can tell windows apart at a glance. Run `/claude-color` inside Claude to pick a different one.
 
 ## Install
+
+**As a Claude Code plugin** (named `terminal-tint`):
+
+```
+/plugin marketplace add adamzaidi/claude-color
+/plugin install terminal-tint@terminal-tint
+```
+
+Then run `/claude-color setup` once. That adds the shell part, which tints the window at launch and puts your colors back when Claude exits.
+
+**Or from a clone:**
 
 ```sh
 git clone https://github.com/adamzaidi/claude-color.git ~/claude-color
 ~/claude-color/install.sh
-source ~/.zshrc
 ```
 
-Requires zsh (the macOS default).
-
-## How the color is picked
-
-1. The project is the git root of the current directory, or the directory itself outside a repo.
-2. If a line in `~/.config/claude-color/overrides` matches part of that path, its color is used.
-3. Otherwise the path is hashed into a palette of 12 dark colors.
+Either way, open a new terminal window afterwards. Requires zsh (the macOS default).
 
 ## Choosing colors
 
-From inside Claude Code, in the window you're working in:
+Inside Claude Code, in the window you're working in:
 
 ```
-/claude-color                 show the palette and pick one
+/claude-color                 open the picker (your current color is listed first)
 /claude-color plum            use a palette color
 /claude-color #2a2240         use any hex
 /claude-color something warm  describe it and Claude picks a color
@@ -33,19 +39,29 @@ From inside Claude Code, in the window you're working in:
 /claude-color reset           back to the automatic color
 ```
 
-The window changes right away, and the choice is saved for that project, so every later `claude` launch there uses it.
+The window changes right away, and the choice is saved for that project. Claude also tells you the matching built-in `/color` command, so the prompt bar can match the window.
+
+| Group | Colors |
+| --- | --- |
+| Blues & purples | navy, slate, indigo, plum |
+| Greens | forest, pine, olive, teal |
+| Warm | walnut, cocoa, wine, oxblood |
 
 The same works from a regular shell:
 
 ```sh
-claude-color              # this project's color
+claude-color              # this project's color + matching /color
 claude-color list         # palette with swatches
 claude-color teal         # set it (saved + applied now)
 claude-color preview '#203040'   # try it without saving
 claude-color next | reset | rules
 ```
 
-Palette: navy, plum, forest, walnut, wine, teal, olive, oxblood, indigo, slate, cocoa, pine.
+## How the color is picked
+
+1. The project is the git root of the current directory, or the directory itself outside a repo.
+2. If a rule in `~/.config/claude-color/overrides` matches, its color is used.
+3. Otherwise the path is hashed into the 12-color palette.
 
 ## Overrides
 
@@ -57,7 +73,7 @@ Palette: navy, plum, forest, walnut, wine, teal, olive, oxblood, indigo, slate, 
 notes                   #1a3328
 ```
 
-An absolute path matches that project exactly. Any other text matches every project whose path contains it. The first match wins, and `claude-color <color>` writes exact-path rules at the top.
+An absolute path matches that project exactly. Any other text matches every project whose path contains it. The first match wins, and `/claude-color <color>` writes exact-path rules at the top.
 
 ## Settings
 
@@ -66,7 +82,8 @@ Put these in `~/.zshrc` before the `source` line:
 | Variable | Effect |
 | --- | --- |
 | `CLAUDE_COLOR_DISABLE=1` | Turn it off without uninstalling |
-| `CLAUDE_COLOR_PALETTE=(...)` | Use your own list of hex colors |
+| `CLAUDE_COLOR_PALETTE=(name=#hex ...)` | Use your own colors |
+| `CLAUDE_COLOR_GROUPS=("Label:name name" ...)` | Groups shown in the picker (max 4 colors each) |
 | `CLAUDE_COLOR_TEXT="#e6e6e6"` | Text color while tinted |
 | `CLAUDE_COLOR_CONFIG=path` | Use a different overrides file |
 
@@ -77,7 +94,7 @@ Put these in `~/.zshrc` before the `source` line:
 
 ## Uninstall
 
-Delete the `source .../claude-color.zsh` line from `~/.zshrc` and remove `~/.claude/skills/claude-color`.
+Remove the `claude-color` lines from `~/.zshrc`, delete `~/.local/share/claude-color`, and either `/plugin uninstall terminal-tint` or remove `~/.claude/skills/claude-color`.
 
 ## License
 

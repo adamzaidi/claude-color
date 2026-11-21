@@ -1,0 +1,19 @@
+{
+  "name": "terminal-tint",
+  "version": "1.0.0",
+  "description": "Per-project terminal background colors for Claude Code sessions, with a /claude-color picker to change them live.",
+  "author": {
+    "name": "Adam Zaidi"
+  },
+  "homepage": "https://github.com/adamzaidi/claude-color",
+  "repository": "https://github.com/adamzaidi/claude-color",
+  "license": "MIT",
+  "keywords": [
+    "terminal",
+    "color",
+    "theme",
+    "zsh"
+  ],
+  "displayName": "Terminal Tint",
+  "icon": ".claude-plugin/icon.png"
+}

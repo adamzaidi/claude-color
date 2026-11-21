@@ -8,8 +8,9 @@
 #   claude-color reset           go back to the automatic color
 #   claude-color preview <c>     apply now without saving
 #   claude-color rules           print the overrides file
+#   claude-color menu            picker data (used by the /claude-color skill)
 
-source "${0:A:h}/../claude-color.zsh"
+source "${0:P:h}/../claude-color.zsh"
 
 key=$(_claude_color_key)
 
@@ -39,9 +40,33 @@ save_rule() {  # replace this project's exact rule, put it first so it wins
 }
 
 status() {
-  local hex src
+  local hex src bar
   if hex=$(_claude_color_override "$key"); then src="override"; else hex=$(_claude_color_pick "$key"); src="automatic"; fi
   swatch $hex; print -r -- "$(describe $hex)  [$src]  $key"
+  bar=$(_claude_color_bar_for $hex) && print -r -- "matching prompt bar: /color $bar"
+}
+
+# Machine-readable picker data for the /claude-color skill.
+menu() {
+  local hex src group label names n entry
+  if hex=$(_claude_color_override "$key"); then src="saved"; else hex=$(_claude_color_pick "$key"); src="automatic"; fi
+  print -r -- "current: $(_claude_color_name_of $hex || print custom) $hex $src"
+  print -r -- "bar: $(_claude_color_bar_for $hex)"
+  print -r -- "project: ${key:t}"
+  if (( ${#CLAUDE_COLOR_GROUPS} )); then
+    for group in $CLAUDE_COLOR_GROUPS; do
+      label=${group%%:*}; names=()
+      for n in ${=group#*:}; do names+=("$n $(_claude_color_resolve $n)"); done
+      print -r -- "group: $label: ${(j:, :)names}"
+    done
+  else  # custom palette without groups: chunks of 4
+    local i=0 chunk=()
+    for entry in $CLAUDE_COLOR_PALETTE; do
+      chunk+=("${entry%%=*} ${entry#*=}"); (( ++i % 4 )) && continue
+      print -r -- "group: Colors $((i-3))-$i: ${(j:, :)chunk}"; chunk=()
+    done
+    (( ${#chunk} )) && print -r -- "group: More: ${(j:, :)chunk}"
+  fi
 }
 
 case ${1:-} in
@@ -65,10 +90,12 @@ case ${1:-} in
   preview)
     hex=$(_claude_color_resolve "${2:-}") || { print -u2 "Unknown color: ${2:-}  (try: claude-color list)"; exit 1; }
     paint $hex; swatch $hex; print -r -- "previewing $(describe $hex) (not saved)" ;;
+  menu)
+    menu ;;
   rules)
     [[ -r $CLAUDE_COLOR_CONFIG ]] && cat "$CLAUDE_COLOR_CONFIG" || print "(no overrides file)" ;;
   help|-h|--help)
-    sed -n '2,10s/^# \{0,1\}//p' "$0" ;;
+    sed -n '2,11s/^# \{0,1\}//p' "$0" ;;
   *)
     hex=$(_claude_color_resolve "$1") || { print -u2 "Unknown color: $1  (try: claude-color list)"; exit 1; }
     save_rule $hex; paint $hex; status ;;
