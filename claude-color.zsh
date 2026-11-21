@@ -23,7 +23,7 @@ typeset -g CLAUDE_COLOR_HOME=${${(%):-%x}:P:h}
 typeset -ga CLAUDE_COLOR_PALETTE
 (( ${#CLAUDE_COLOR_PALETTE} )) || CLAUDE_COLOR_PALETTE=(
   navy=#1b2a3d   slate=#1f2f3a   forest=#1a3328
-  dune=#5b3e22   oxblood=#3b1f1f poe=#231a35
+  dune=#e3cfa8   oxblood=#3b1f1f poe=#231a35
 )
 
 # Groups for the /claude-color picker ("Label:name name ..."). At most 4 names
@@ -42,7 +42,7 @@ typeset -gA CLAUDE_COLOR_PAIRS
   navy    '#c5b783'  # Navy Midshipmen gold
   slate   '#e87722'  # Auburn orange
   forest  '#fee123'  # Oregon yellow
-  dune    '#7cc4f2'  # Fremen "eyes of Ibad" blue (Dune, not football)
+  dune    '#7cc4f2'  # Fremen "eyes of Ibad" blue (Dune, not football); darkened on light bg
   oxblood '#fdf9d8'  # Oklahoma cream
   poe     '#fdd023'  # LSU gold
 )
@@ -230,7 +230,24 @@ _claude_color_lighten() {
   print -r -- "$out"
 }
 
+# Is a background light enough to need dark text? (rough luma, 0-255)
+_claude_color_is_light() {
+  local h=${1#\#}
+  (( (2126 * 16#${h[1,2]} + 7152 * 16#${h[3,4]} + 722 * 16#${h[5,6]}) / 10000 > 120 ))
+}
+
+# Accent for a background; on light backgrounds it's darkened to stay readable.
 _claude_color_accent() {
+  local a=$(_claude_color_accent_raw "$1") c out="#"
+  if _claude_color_is_light "$1"; then
+    a=${a#\#}
+    for c in ${a[1,2]} ${a[3,4]} ${a[5,6]}; do out+=$(printf '%02x' $(( 16#$c * 40 / 100 ))); done
+    a=$out
+  fi
+  print -r -- "$a"
+}
+
+_claude_color_accent_raw() {
   local mode=$(_claude_color_accent_mode) h=${1#\#}
   local r=$((16#${h[1,2]})) g=$((16#${h[3,4]})) b=$((16#${h[5,6]})) s
   case $mode in
@@ -246,9 +263,11 @@ _claude_color_accent() {
   esac
 }
 
-# Regular text color: dimmed a little in white mode so bold stands out.
+# Regular text color for background $1: dark on light backgrounds; light
+# otherwise (dimmed a little in white mode so bold stands out).
 _claude_color_text() {
   [[ -n $CLAUDE_COLOR_TEXT ]] && { print -r -- "$CLAUDE_COLOR_TEXT"; return; }
+  [[ -n $1 ]] && _claude_color_is_light "$1" && { print -r -- "#2a2117"; return; }
   [[ $(_claude_color_accent_mode) == white ]] && print -r -- "#d2d2d2" || print -r -- "#e6e6e6"
 }
 
@@ -258,11 +277,11 @@ _claude_color_apply() {
   accent=$(_claude_color_accent "$hex")
   if [[ $TERM_PROGRAM == Apple_Terminal ]]; then
     _claude_color_terminal_tab "$dev" "set background color of t to {$(_claude_color_16bit $hex)}
-            set normal text color of t to {$(_claude_color_16bit $(_claude_color_text))}
+            set normal text color of t to {$(_claude_color_16bit $(_claude_color_text $hex))}
             set bold text color of t to {$(_claude_color_16bit $accent)}
             set cursor color of t to {$(_claude_color_16bit $accent)}" >/dev/null
   else
-    printf '\e]11;%s\a\e]10;%s\a\e]12;%s\a' "$hex" "$(_claude_color_text)" "$accent" > "$dev"
+    printf '\e]11;%s\a\e]10;%s\a\e]12;%s\a' "$hex" "$(_claude_color_text $hex)" "$accent" > "$dev"
   fi
 }
 

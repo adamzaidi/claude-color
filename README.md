@@ -45,7 +45,7 @@ Simple commands like these are applied by a prompt hook the instant you press En
 | navy | `#1b2a3d` deep blue | Navy Midshipmen gold `#C5B783` |
 | slate | `#1f2f3a` blue-gray | Auburn orange `#E87722` |
 | forest | `#1a3328` deep green | Oregon yellow `#FEE123` |
-| dune | `#5b3e22` Arrakis spice sand | Fremen "eyes of Ibad" blue `#7CC4F2` (from the movie) |
+| dune | `#e3cfa8` bone-white Arrakis sand (dark text) | deep Fremen "eyes of Ibad" blue (from the movie) |
 | oxblood | `#3b1f1f` deep red | Oklahoma cream `#FDF9D8` |
 | poe | `#231a35` raven-black purple | LSU gold `#FDD023` |
 
@@ -64,6 +64,8 @@ Tab completion works in zsh: `claude-color <Tab>` lists the colors and commands,
 
 ```sh
 ```
+
+Light backgrounds (like dune) automatically get dark text and a darker accent.
 
 ## How the color is picked
 

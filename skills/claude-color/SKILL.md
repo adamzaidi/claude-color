@@ -27,7 +27,7 @@ Run `<tool> list` and reply with the color names on one line, followed by "Type 
 | `accent` or `accent <pair\|white\|complement\|tint\|#hex>` | `<tool> accent <mode>`. This sets the bold-text and cursor color for every project. pair = a college football team's secondary color per background (default; forest gets Oregon yellow, poe gets LSU gold), complement = vivid opposite hue, tint = same hue, white = plain white. With no mode, run `<tool> accent` and reply with its line. |
 | `preview <color>` | `<tool> preview '<color>'` (applies without saving) |
 | `setup` | `${CLAUDE_SKILL_DIR}/../../install.sh --no-skill`, then tell them to open a new terminal window |
-| a description ("darker blue", "something warm") | choose a dark hex for it (each channel under about `#45`, so the light text stays readable) and run `<tool> '<hex>'` |
+| a description ("darker blue", "something warm") | choose a hex for it (dark or light both work, since light backgrounds get dark text automatically) and run `<tool> '<hex>'` |
 
 ## Reply
 
