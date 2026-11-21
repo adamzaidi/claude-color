@@ -12,12 +12,12 @@
 #   CLAUDE_COLOR_DISABLE=1            turn it off without uninstalling
 #   CLAUDE_COLOR_CONFIG=<path>        overrides file (default ~/.config/claude-color/overrides)
 #   CLAUDE_COLOR_PALETTE=(...)        your own colors: "name=#hex" or "#hex"
-#   CLAUDE_COLOR_TEXT="#e6e6e6"       text color used while tinted
-#   CLAUDE_COLOR_ACCENT="#hex"        fixed bold/cursor color (default: derived per color)
+#   CLAUDE_COLOR_TEXT="#hex"          regular text color while tinted
+#   CLAUDE_COLOR_ACCENT=<mode|#hex>   bold/cursor: white, complement, tint, or a hex
 
 typeset -g CLAUDE_COLOR_HOME=${${(%):-%x}:P:h}
 : ${CLAUDE_COLOR_CONFIG:=$HOME/.config/claude-color/overrides}
-: ${CLAUDE_COLOR_TEXT:=#e6e6e6}
+: ${CLAUDE_COLOR_ACCENT_FILE:=$HOME/.config/claude-color/accent}
 
 # Append only: reordering changes every project's automatic color.
 typeset -ga CLAUDE_COLOR_PALETTE
@@ -176,18 +176,46 @@ end run
 EOF
 }
 
-# Accent for a background: the same hue, light. Brighten until the strongest
-# channel hits 255, then blend halfway with white. Used for bold text and
-# the cursor, so headings stay readable and match the background.
-_claude_color_accent() {
-  [[ -n $CLAUDE_COLOR_ACCENT ]] && { print -r -- "$CLAUDE_COLOR_ACCENT"; return; }
-  local h=${1#\#} m c out="#"
-  local -a ch=( $((16#${h[1,2]})) $((16#${h[3,4]})) $((16#${h[5,6]})) )
-  m=${${(On)ch}[1]}; (( m < 1 )) && m=1
-  for c in $ch; do
-    out+=$(printf '%02x' $(( (c * 255 / m) * 55 / 100 + 255 * 45 / 100 )))
-  done
+# Accent (bold text + cursor) for a background. Modes, chosen by
+# `claude-color accent <mode>` (saved in $CLAUDE_COLOR_ACCENT_FILE) or by
+# CLAUDE_COLOR_ACCENT (a mode or a #hex):
+#   white       pure white bold over slightly dimmer text (default; the
+#               dark-background equivalent of black-on-white)
+#   complement  the opposite hue, light (navy -> pale amber)
+#   tint        the same hue, light (navy -> pale blue)
+_claude_color_accent_mode() {
+  local m=$CLAUDE_COLOR_ACCENT
+  [[ -z $m && -r $CLAUDE_COLOR_ACCENT_FILE ]] && read -r m < "$CLAUDE_COLOR_ACCENT_FILE"
+  print -r -- "${m:-white}"
+}
+
+# Light version of an rgb triple: scale until the top channel is 255, then
+# blend 55/45 with white.
+_claude_color_lighten() {
+  local m=1 c out="#"
+  for c in "$@"; do (( c > m )) && m=$c; done
+  for c in "$@"; do out+=$(printf '%02x' $(( (c * 255 / m) * 55 / 100 + 255 * 45 / 100 ))); done
   print -r -- "$out"
+}
+
+_claude_color_accent() {
+  local mode=$(_claude_color_accent_mode) h=${1#\#}
+  local r=$((16#${h[1,2]})) g=$((16#${h[3,4]})) b=$((16#${h[5,6]})) s
+  case $mode in
+    \#*)       print -r -- "$mode" ;;
+    tint)       _claude_color_lighten $r $g $b ;;
+    complement) local hi=$r lo=$r c
+                for c in $g $b; do (( c > hi )) && hi=$c; (( c < lo )) && lo=$c; done
+                s=$(( hi + lo ))  # rotate hue 180 degrees: c -> max + min - c
+                _claude_color_lighten $(( s - r )) $(( s - g )) $(( s - b )) ;;
+    *)          print -r -- "#ffffff" ;;
+  esac
+}
+
+# Regular text color: dimmed a little in white mode so bold stands out.
+_claude_color_text() {
+  [[ -n $CLAUDE_COLOR_TEXT ]] && { print -r -- "$CLAUDE_COLOR_TEXT"; return; }
+  [[ $(_claude_color_accent_mode) == white ]] && print -r -- "#d2d2d2" || print -r -- "#e6e6e6"
 }
 
 # Paint background $1 on terminal $2 (plus light text and a matching accent).
@@ -196,11 +224,11 @@ _claude_color_apply() {
   accent=$(_claude_color_accent "$hex")
   if [[ $TERM_PROGRAM == Apple_Terminal ]]; then
     _claude_color_terminal_tab "$dev" "set background color of t to {$(_claude_color_16bit $hex)}
-            set normal text color of t to {$(_claude_color_16bit $CLAUDE_COLOR_TEXT)}
+            set normal text color of t to {$(_claude_color_16bit $(_claude_color_text))}
             set bold text color of t to {$(_claude_color_16bit $accent)}
             set cursor color of t to {$(_claude_color_16bit $accent)}" >/dev/null
   else
-    printf '\e]11;%s\a\e]10;%s\a\e]12;%s\a' "$hex" "$CLAUDE_COLOR_TEXT" "$accent" > "$dev"
+    printf '\e]11;%s\a\e]10;%s\a\e]12;%s\a' "$hex" "$(_claude_color_text)" "$accent" > "$dev"
   fi
 }
 

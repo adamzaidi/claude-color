@@ -1,7 +1,7 @@
 ---
 name: claude-color
 description: Change this terminal window's background tint for the current project (claude-color plugin). Use when the user runs /claude-color, or asks to change, pick, preview, cycle, or reset the window/terminal color.
-argument-hint: "[name | #hex | description | next | reset | setup]"
+argument-hint: "[name | #hex | description | next | reset | accent | setup]"
 allowed-tools: Bash(${CLAUDE_SKILL_DIR}/../../bin/claude-color:*), Bash(${CLAUDE_SKILL_DIR}/../../install.sh:*), AskUserQuestion
 ---
 
@@ -28,6 +28,7 @@ Arguments: `$ARGUMENTS`
 | a palette name (navy, slate, indigo, plum, forest, pine, olive, teal, walnut, cocoa, wine, oxblood) | `<tool> <name>` |
 | a hex like `#223344` | `<tool> '<hex>'` (quote it, because `#` starts a shell comment) |
 | `next` / `reset` / `list` / `rules` | `<tool> <word>` |
+| `accent` or `accent <white\|complement\|tint\|#hex>` | `<tool> accent <mode>`. This sets the bold-text and cursor color for every project. white = high-contrast white bold (default), complement = opposite hue, tint = same hue. With no mode, show the current one and those three choices with AskUserQuestion. |
 | `preview <color>` | `<tool> preview '<color>'` (applies without saving) |
 | `setup` | `${CLAUDE_SKILL_DIR}/../../install.sh --no-skill`, then tell them to open a new terminal window |
 | a description ("darker blue", "something warm") | choose a dark hex for it (each channel under about `#45`, so the light text stays readable) and run `<tool> '<hex>'` |

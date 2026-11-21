@@ -39,7 +39,7 @@ Inside Claude Code, in the window you're working in:
 /claude-color reset           back to the automatic color
 ```
 
-The window changes right away, and the choice is saved for that project. Bold text and the cursor get a light shade of the same hue (pale mint on forest, pale blue on navy), so headings stay readable. Claude also tells you the matching built-in `/color` command, so the prompt bar can match the window.
+The window changes right away, and the choice is saved for that project. Bold text and the cursor turn white, with regular text a touch dimmer, so bold stands out the way black does on a white background. `/claude-color accent complement` switches to the opposite hue (pale amber on navy), and `accent tint` to a pale version of the same hue. Claude also tells you the matching built-in `/color` command, so the prompt bar can match the window.
 
 | Group | Colors |
 | --- | --- |
@@ -54,6 +54,7 @@ claude-color              # this project's color + matching /color
 claude-color list         # palette with swatches
 claude-color teal         # set it (saved + applied now)
 claude-color preview '#203040'   # try it without saving
+claude-color accent complement   # bold/cursor: white | complement | tint | #hex
 claude-color next | reset | rules
 ```
 
@@ -84,8 +85,8 @@ Put these in `~/.zshrc` before the `source` line:
 | `CLAUDE_COLOR_DISABLE=1` | Turn it off without uninstalling |
 | `CLAUDE_COLOR_PALETTE=(name=#hex ...)` | Use your own colors |
 | `CLAUDE_COLOR_GROUPS=("Label:name name" ...)` | Groups shown in the picker (max 4 colors each) |
-| `CLAUDE_COLOR_TEXT="#e6e6e6"` | Text color while tinted |
-| `CLAUDE_COLOR_ACCENT="#hex"` | Fixed bold and cursor color (default: a light shade of each background's hue) |
+| `CLAUDE_COLOR_TEXT="#hex"` | Regular text color while tinted |
+| `CLAUDE_COLOR_ACCENT=mode` | Bold and cursor: `white` (default), `complement`, `tint`, or a hex. Overrides `claude-color accent`. |
 | `CLAUDE_COLOR_CONFIG=path` | Use a different overrides file |
 
 ## Terminal support
