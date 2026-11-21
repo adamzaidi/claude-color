@@ -1,7 +1,10 @@
 #!/bin/zsh
-# UserPromptSubmit hook: handles "/claude-color <args>" (or "claude-color <args>")
-# instantly. The color changes and a one-line confirmation shows, with no model
-# turn. Every other prompt passes through untouched.
+# UserPromptSubmit hook: applies "/claude-color <args>" (or "claude-color <args>")
+# the instant the prompt is submitted, then lets the prompt through with a note
+# so Claude just confirms in one line. Blocking would avoid the model turn, but
+# Claude Code labels every blocked prompt "blocked by hook", which reads like an
+# error. Set CLAUDE_COLOR_HOOK_BLOCK=1 to block anyway (no model turn).
+# Every other prompt passes through untouched.
 input=$(cat)
 [[ $input == *'"prompt":"'(/|)'claude-color'* ]] || exit 0
 
@@ -37,5 +40,10 @@ else
     esac
   fi
 fi
-msg=${msg//\\/\\\\}; msg=${msg//\"/\\\"}
-print -r -- "{\"decision\":\"block\",\"reason\":\"$msg\"}"
+json() { local m=${1//\\/\\\\}; print -r -- "${m//\"/\\\"}"; }
+if [[ -n $CLAUDE_COLOR_HOOK_BLOCK ]]; then
+  print -r -- "{\"decision\":\"block\",\"reason\":\"$(json "$msg")\",\"suppressOriginalPrompt\":true}"
+else
+  ctx="claude-color hook: this command was already applied, and the result is: $msg -- Do not run any tools. Reply with exactly that result as one line, nothing else."
+  print -r -- "{\"hookSpecificOutput\":{\"hookEventName\":\"UserPromptSubmit\",\"additionalContext\":\"$(json "$ctx")\"}}"
+fi

@@ -11,7 +11,7 @@ Tool: `${CLAUDE_SKILL_DIR}/../../bin/claude-color`
 
 Arguments: `$ARGUMENTS`
 
-Simple forms (`/claude-color forest`, `#hex`, `next`, `reset`, `accent <mode>`) are normally handled instantly by the plugin's prompt hook and never reach you. You get the rest.
+**First check for a "claude-color hook" note in your context.** Simple forms (`/claude-color forest`, `#hex`, `next`, `reset`, `accent <mode>`) are applied by the plugin's prompt hook before you see them. If the note is there, the change is already done: don't run anything, just reply with the result line it gives. Otherwise, follow the rules below.
 
 ## No arguments
 

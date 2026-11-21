@@ -39,7 +39,7 @@ Inside Claude Code, in the window you're working in:
 /claude-color reset           back to the automatic color
 ```
 
-Simple commands like these run instantly through a prompt hook, with no reply from Claude to wait for. Descriptions like "something warm" go to Claude to interpret. The window changes right away, and the choice is saved for that project. Bold text and the cursor get a hand-picked muted complement of the background (pale pink on forest, muted gold on navy, seafoam on oxblood), so headings stand out without glaring. `/claude-color accent <mode>` switches to `complement` (vivid opposite hue), `tint` (same hue), `white`, or any hex, such as `'#d4b26a'`.
+Simple commands like these are applied by a prompt hook the instant you press Enter, and Claude just confirms in one line. Descriptions like "something warm" go to Claude to interpret. The window changes right away, and the choice is saved for that project. Bold text and the cursor get a hand-picked muted complement of the background (pale pink on forest, muted gold on navy, seafoam on oxblood), so headings stand out without glaring. `/claude-color accent <mode>` switches to `complement` (vivid opposite hue), `tint` (same hue), `white`, or any hex, such as `'#d4b26a'`.
 
 | Group | Colors |
 | --- | --- |
