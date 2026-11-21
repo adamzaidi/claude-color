@@ -23,7 +23,7 @@ typeset -g CLAUDE_COLOR_HOME=${${(%):-%x}:P:h}
 typeset -ga CLAUDE_COLOR_PALETTE
 (( ${#CLAUDE_COLOR_PALETTE} )) || CLAUDE_COLOR_PALETTE=(
   navy=#1b2a3d   slate=#1f2f3a   forest=#1a3328
-  dune=#4d402d   oxblood=#3b1f1f poe=#231a35
+  dune=#5b3e22   oxblood=#3b1f1f poe=#231a35
 )
 
 # Groups for the /claude-color picker ("Label:name name ..."). At most 4 names
@@ -42,7 +42,7 @@ typeset -gA CLAUDE_COLOR_PAIRS
   navy    '#c5b783'  # Navy Midshipmen gold
   slate   '#e87722'  # Auburn orange
   forest  '#fee123'  # Oregon yellow
-  dune    '#ffc425'  # Wyoming gold
+  dune    '#7cc4f2'  # Fremen "eyes of Ibad" blue (Dune, not football)
   oxblood '#fdf9d8'  # Oklahoma cream
   poe     '#fdd023'  # LSU gold
 )
