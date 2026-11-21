@@ -14,7 +14,7 @@ Give every Claude Code session its own terminal background color, chosen by proj
 claude plugin install color --marketplace adamzaidi/claude-color
 ```
 
-(Inside Claude Code you can also use `/plugin marketplace add adamzaidi/claude-color`, then `/plugin install color@adamzaidi`.)
+(Inside Claude Code you can also use `/plugin marketplace add adamzaidi/claude-color`, then `/plugin install color@claude-color`.)
 
 `/claude-color <name>` works right away. To also have each window tint automatically when `claude` starts, run `/claude-color setup` once. It adds a small hook to `~/.zshrc`, so it asks first rather than doing it on its own.
 

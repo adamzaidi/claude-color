@@ -1,5 +1,5 @@
 {
-  "name": "adamzaidi",
+  "name": "claude-color",
   "owner": {
     "name": "Adam Zaidi"
   },
@@ -7,8 +7,8 @@
     {
       "name": "color",
       "source": "./",
-      "description": "Per-project terminal background colors for Claude Code sessions, with a /claude-color picker to change them live."
+      "description": "Per-project terminal background colors for Claude Code sessions; switch instantly with /claude-color <name>."
     }
   ],
-  "description": "Claude Code plugins by Adam Zaidi."
+  "description": "Per-project terminal background colors for Claude Code."
 }
