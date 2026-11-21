@@ -1,0 +1,75 @@
+#!/usr/bin/env zsh
+# claude-color — choose the terminal tint for the current project.
+#
+#   claude-color                 show this project's color
+#   claude-color list            show the palette
+#   claude-color <name|#hex>     set this project's color (saved + applied now)
+#   claude-color next            switch to the next palette color
+#   claude-color reset           go back to the automatic color
+#   claude-color preview <c>     apply now without saving
+#   claude-color rules           print the overrides file
+
+source "${0:A:h}/../claude-color.zsh"
+
+key=$(_claude_color_key)
+
+describe() {  # hex -> "name (#hex)" or "#hex"
+  local n; n=$(_claude_color_name_of "$1") && print -r -- "$n ($1)" || print -r -- "$1"
+}
+
+swatch() {  # truecolor block when printing to a real terminal
+  [[ -t 1 ]] || return
+  local h=${1#\#}
+  printf '\e[48;2;%d;%d;%dm      \e[0m ' $((16#${h[1,2]})) $((16#${h[3,4]})) $((16#${h[5,6]}))
+}
+
+paint() {
+  local dev; dev=$(_claude_color_tty) || { print "(no terminal found; saved for next launch)"; return; }
+  _claude_color_apply "$1" "$dev"
+}
+
+save_rule() {  # replace this project's exact rule, put it first so it wins
+  local tmp; mkdir -p "${CLAUDE_COLOR_CONFIG:h}"; touch "$CLAUDE_COLOR_CONFIG"
+  tmp=$(mktemp)
+  { [[ -n $1 ]] && print -r -- "$key  $1"
+    while IFS= read -r line; do
+      [[ ${line%%[[:space:]]*} == "$key" ]] || print -r -- "$line"
+    done < "$CLAUDE_COLOR_CONFIG"
+  } > "$tmp" && mv "$tmp" "$CLAUDE_COLOR_CONFIG"
+}
+
+status() {
+  local hex src
+  if hex=$(_claude_color_override "$key"); then src="override"; else hex=$(_claude_color_pick "$key"); src="automatic"; fi
+  swatch $hex; print -r -- "$(describe $hex)  [$src]  $key"
+}
+
+case ${1:-} in
+  ""|status)
+    status ;;
+  list|ls)
+    current=$(_claude_color_pick "$key")
+    for entry in $CLAUDE_COLOR_PALETTE; do
+      hex=${entry#*=}; name=${entry%%=*}; [[ $entry == *=* ]] || name=""
+      mark="  "; [[ ${hex:l} == ${current:l} ]] && mark="* "
+      swatch $hex; printf '%s%-8s %s\n' "$mark" "$name" "$hex"
+    done
+    print "\nAny hex works too: claude-color '#223344'" ;;
+  next)
+    current=$(_claude_color_pick "$key"); i=1 n=${#CLAUDE_COLOR_PALETTE}
+    for (( j=1; j<=n; j++ )); do [[ ${${CLAUDE_COLOR_PALETTE[j]#*=}:l} == ${current:l} ]] && i=$j; done
+    hex=${CLAUDE_COLOR_PALETTE[$(( i % n + 1 ))]#*=}
+    save_rule $hex; paint $hex; status ;;
+  reset|auto)
+    save_rule ""; paint "$(_claude_color_pick "$key")"; status ;;
+  preview)
+    hex=$(_claude_color_resolve "${2:-}") || { print -u2 "Unknown color: ${2:-}  (try: claude-color list)"; exit 1; }
+    paint $hex; swatch $hex; print -r -- "previewing $(describe $hex) (not saved)" ;;
+  rules)
+    [[ -r $CLAUDE_COLOR_CONFIG ]] && cat "$CLAUDE_COLOR_CONFIG" || print "(no overrides file)" ;;
+  help|-h|--help)
+    sed -n '2,10s/^# \{0,1\}//p' "$0" ;;
+  *)
+    hex=$(_claude_color_resolve "$1") || { print -u2 "Unknown color: $1  (try: claude-color list)"; exit 1; }
+    save_rule $hex; paint $hex; status ;;
+esac

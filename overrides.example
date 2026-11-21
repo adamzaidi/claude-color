@@ -1,0 +1,6 @@
+# claude-color overrides
+# One rule per line: <text in the project path>  <#hex background>
+# First match wins. Projects with no match get an automatic color.
+#
+# notes        #1a3328
+# website      #1b2a3d
