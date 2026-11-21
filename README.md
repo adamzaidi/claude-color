@@ -39,16 +39,16 @@ Inside Claude Code, in the window you're working in:
 /claude-color reset           back to the automatic color
 ```
 
-Simple commands like these are applied by a prompt hook the instant you press Enter, and Claude just confirms in one line. Descriptions like "something warm" go to Claude to interpret. The window changes right away, and the choice is saved for that project. Bold text and the cursor get a hand-picked muted complement of the background (pale pink on forest, muted gold on navy, candlelight gold on poe), so headings stand out without glaring. `/claude-color accent <mode>` switches to `complement` (vivid opposite hue), `tint` (same hue), `white`, or any hex, such as `'#d4b26a'`.
+Simple commands like these are applied by a prompt hook the instant you press Enter, and Claude just confirms in one line. Descriptions like "something warm" go to Claude to interpret. The window changes right away, and the choice is saved for that project. Bold text and the cursor take the secondary color of a college football team whose main color matches the background (Oregon yellow on forest, Navy gold on navy, LSU gold on poe). `/claude-color accent <mode>` switches to `complement` (vivid opposite hue), `tint` (same hue), `white`, or any hex, such as `'#d4b26a'`.
 
-| Color | Background | Bold text |
+| Color | Background | Bold text (a team's secondary color) |
 | --- | --- | --- |
-| navy | `#1b2a3d` deep blue | muted gold |
-| slate | `#1f2f3a` blue-gray | warm sand |
-| forest | `#1a3328` deep green | pale pink |
-| dune | `#3b3122` dark desert sand | dusty sky blue |
-| oxblood | `#3b1f1f` deep red | muted seafoam |
-| poe | `#231a35` raven-black purple | candlelight gold |
+| navy | `#1b2a3d` deep blue | Navy Midshipmen gold `#C5B783` |
+| slate | `#1f2f3a` blue-gray | Auburn orange `#E87722` |
+| forest | `#1a3328` deep green | Oregon yellow `#FEE123` |
+| dune | `#3b3122` dark desert sand | Wyoming gold `#FFC425` |
+| oxblood | `#3b1f1f` deep red | Oklahoma cream `#FDF9D8` |
+| poe | `#231a35` raven-black purple | LSU gold `#FDD023` |
 
 The same works from a regular shell:
 

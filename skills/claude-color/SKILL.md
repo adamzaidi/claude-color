@@ -24,7 +24,7 @@ Run `<tool> list` and reply with the color names on one line, followed by "Type 
 | a palette name (navy, slate, forest, dune, oxblood, poe) | `<tool> <name>` |
 | a hex like `#223344` | `<tool> '<hex>'` (quote it, because `#` starts a shell comment) |
 | `next` / `reset` / `list` / `rules` | `<tool> <word>` |
-| `accent` or `accent <pair\|white\|complement\|tint\|#hex>` | `<tool> accent <mode>`. This sets the bold-text and cursor color for every project. pair = a hand-picked muted complement per color (default; forest gets pale pink, navy gets muted gold), complement = vivid opposite hue, tint = same hue, white = plain white. With no mode, run `<tool> accent` and reply with its line. |
+| `accent` or `accent <pair\|white\|complement\|tint\|#hex>` | `<tool> accent <mode>`. This sets the bold-text and cursor color for every project. pair = a college football team's secondary color per background (default; forest gets Oregon yellow, poe gets LSU gold), complement = vivid opposite hue, tint = same hue, white = plain white. With no mode, run `<tool> accent` and reply with its line. |
 | `preview <color>` | `<tool> preview '<color>'` (applies without saving) |
 | `setup` | `${CLAUDE_SKILL_DIR}/../../install.sh --no-skill`, then tell them to open a new terminal window |
 | a description ("darker blue", "something warm") | choose a dark hex for it (each channel under about `#45`, so the light text stays readable) and run `<tool> '<hex>'` |

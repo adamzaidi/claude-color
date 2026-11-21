@@ -34,12 +34,17 @@ typeset -ga CLAUDE_COLOR_GROUPS
   "Earth:forest dune oxblood"
 )
 
-# Hand-picked accent (bold text + cursor) for each palette color: a soft,
-# muted complement that stands out without glaring. Used by accent mode "pair".
+# Accent (bold text + cursor) for each palette color: the secondary color of a
+# college football team whose main color is close to the background.
+# Used by accent mode "pair".
 typeset -gA CLAUDE_COLOR_PAIRS
 (( ${#CLAUDE_COLOR_PAIRS} )) || CLAUDE_COLOR_PAIRS=(
-  navy '#d9b26f'    slate '#d8b98a'   forest '#e8b4bc'
-  dune '#a9c4dc'    oxblood '#a6cfc2' poe '#d8c48e'
+  navy    '#c5b783'  # Navy Midshipmen gold
+  slate   '#e87722'  # Auburn orange
+  forest  '#fee123'  # Oregon yellow
+  dune    '#ffc425'  # Wyoming gold
+  oxblood '#fdf9d8'  # Oklahoma cream
+  poe     '#fdd023'  # LSU gold
 )
 
 # Put bin/ on PATH for interactive shells.
@@ -171,8 +176,8 @@ EOF
 # Accent (bold text + cursor) for a background. Modes, chosen by
 # `claude-color accent <mode>` (saved in $CLAUDE_COLOR_ACCENT_FILE) or by
 # CLAUDE_COLOR_ACCENT (a mode or a #hex):
-#   pair        hand-picked muted complement per color (default; forest ->
-#               pale pink, navy -> muted gold); custom hexes use the nearest
+#   pair        a college football team's secondary color per background
+#               (default; forest -> Oregon yellow); custom hexes use the nearest
 #   white       pure white bold over slightly dimmer text
 #   complement  the opposite hue, light (navy -> pale amber)
 #   tint        the same hue, light (navy -> pale blue)
