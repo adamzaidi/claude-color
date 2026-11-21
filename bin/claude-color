@@ -33,8 +33,9 @@ save_rule() {  # replace this project's exact rule, put it first so it wins
   local tmp; mkdir -p "${CLAUDE_COLOR_CONFIG:h}"; touch "$CLAUDE_COLOR_CONFIG"
   tmp=$(mktemp)
   { [[ -n $1 ]] && print -r -- "$key  $1"
+    local -a reply
     while IFS= read -r line; do
-      [[ ${line%%[[:space:]]*} == "$key" ]] || print -r -- "$line"
+      _claude_color_parse_rule "$line" && [[ $reply[1] == "$key" ]] || print -r -- "$line"
     done < "$CLAUDE_COLOR_CONFIG"
   } > "$tmp" && mv "$tmp" "$CLAUDE_COLOR_CONFIG"
 }
