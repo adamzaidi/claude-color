@@ -1,14 +1,14 @@
 {
-  "name": "terminal-tint",
+  "name": "adamzaidi",
   "owner": {
     "name": "Adam Zaidi"
   },
   "plugins": [
     {
-      "name": "terminal-tint",
+      "name": "color",
       "source": "./",
       "description": "Per-project terminal background colors for Claude Code sessions, with a /claude-color picker to change them live."
     }
   ],
-  "description": "Per-project terminal background colors for Claude Code."
+  "description": "Claude Code plugins by Adam Zaidi."
 }

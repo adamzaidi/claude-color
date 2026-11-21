@@ -1,5 +1,5 @@
 {
-  "name": "terminal-tint",
+  "name": "color",
   "version": "1.0.0",
   "description": "Per-project terminal background colors for Claude Code sessions, with a /claude-color picker to change them live.",
   "author": {
@@ -14,6 +14,6 @@
     "theme",
     "zsh"
   ],
-  "displayName": "Terminal Tint",
+  "displayName": "Claude Color",
   "icon": ".claude-plugin/icon.png"
 }
