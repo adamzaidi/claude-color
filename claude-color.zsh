@@ -22,27 +22,24 @@ typeset -g CLAUDE_COLOR_HOME=${${(%):-%x}:P:h}
 # Append only: reordering changes every project's automatic color.
 typeset -ga CLAUDE_COLOR_PALETTE
 (( ${#CLAUDE_COLOR_PALETTE} )) || CLAUDE_COLOR_PALETTE=(
-  navy=#1b2a3d  plum=#2b1f3d   forest=#1a3328  walnut=#3a2a1a
-  wine=#3a1c2a  teal=#16343a   olive=#2c3519   oxblood=#3b1f1f
-  indigo=#24243f slate=#1f2f3a cocoa=#35281f   pine=#203a33
+  navy=#1b2a3d   slate=#1f2f3a   forest=#1a3328
+  dune=#3b3122   oxblood=#3b1f1f poe=#231a35
 )
 
 # Groups for the /claude-color picker ("Label:name name ..."). At most 4 names
 # each, because the picker shows 4 choices at a time.
 typeset -ga CLAUDE_COLOR_GROUPS
 (( ${#CLAUDE_COLOR_GROUPS} )) || CLAUDE_COLOR_GROUPS=(
-  "Blues & purples:navy slate indigo plum"
-  "Greens:forest pine olive teal"
-  "Warm:walnut cocoa wine oxblood"
+  "Cool:navy slate poe"
+  "Earth:forest dune oxblood"
 )
 
 # Hand-picked accent (bold text + cursor) for each palette color: a soft,
 # muted complement that stands out without glaring. Used by accent mode "pair".
 typeset -gA CLAUDE_COLOR_PAIRS
 (( ${#CLAUDE_COLOR_PAIRS} )) || CLAUDE_COLOR_PAIRS=(
-  navy '#d9b26f'    slate '#d8b98a'   indigo '#dcb877'  plum '#d6c58c'
-  forest '#e8b4bc'  pine '#e0aeb2'    olive '#c6b4dc'   teal '#e3b29a'
-  walnut '#a9c4dc'  cocoa '#a8ccc8'   wine '#b2d2b6'    oxblood '#a6cfc2'
+  navy '#d9b26f'    slate '#d8b98a'   forest '#e8b4bc'
+  dune '#a9c4dc'    oxblood '#a6cfc2' poe '#d8c48e'
 )
 
 # Put bin/ on PATH for interactive shells.

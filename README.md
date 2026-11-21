@@ -32,27 +32,30 @@ Inside Claude Code, in the window you're working in:
 
 ```
 /claude-color                 list the colors
-/claude-color plum            use a palette color
+/claude-color poe             use a palette color
 /claude-color #2a2240         use any hex
 /claude-color something warm  describe it and Claude picks a color
 /claude-color next            cycle to the next palette color
 /claude-color reset           back to the automatic color
 ```
 
-Simple commands like these are applied by a prompt hook the instant you press Enter, and Claude just confirms in one line. Descriptions like "something warm" go to Claude to interpret. The window changes right away, and the choice is saved for that project. Bold text and the cursor get a hand-picked muted complement of the background (pale pink on forest, muted gold on navy, seafoam on oxblood), so headings stand out without glaring. `/claude-color accent <mode>` switches to `complement` (vivid opposite hue), `tint` (same hue), `white`, or any hex, such as `'#d4b26a'`.
+Simple commands like these are applied by a prompt hook the instant you press Enter, and Claude just confirms in one line. Descriptions like "something warm" go to Claude to interpret. The window changes right away, and the choice is saved for that project. Bold text and the cursor get a hand-picked muted complement of the background (pale pink on forest, muted gold on navy, candlelight gold on poe), so headings stand out without glaring. `/claude-color accent <mode>` switches to `complement` (vivid opposite hue), `tint` (same hue), `white`, or any hex, such as `'#d4b26a'`.
 
-| Group | Colors |
-| --- | --- |
-| Blues & purples | navy, slate, indigo, plum |
-| Greens | forest, pine, olive, teal |
-| Warm | walnut, cocoa, wine, oxblood |
+| Color | Background | Bold text |
+| --- | --- | --- |
+| navy | `#1b2a3d` deep blue | muted gold |
+| slate | `#1f2f3a` blue-gray | warm sand |
+| forest | `#1a3328` deep green | pale pink |
+| dune | `#3b3122` dark desert sand | dusty sky blue |
+| oxblood | `#3b1f1f` deep red | muted seafoam |
+| poe | `#231a35` raven-black purple | candlelight gold |
 
 The same works from a regular shell:
 
 ```sh
 claude-color              # this project's color
 claude-color list         # palette with swatches
-claude-color teal         # set it (saved + applied now)
+claude-color dune         # set it (saved + applied now)
 claude-color preview '#203040'   # try it without saving
 claude-color accent complement   # bold/cursor: pair | white | complement | tint | #hex
 claude-color next | reset | rules
@@ -62,7 +65,7 @@ claude-color next | reset | rules
 
 1. The project is the git root of the current directory, or the directory itself outside a repo.
 2. If a rule in `~/.config/claude-color/overrides` matches, its color is used.
-3. Otherwise the path is hashed into the 12-color palette.
+3. Otherwise the path is hashed into the 6-color palette.
 
 ## Overrides
 

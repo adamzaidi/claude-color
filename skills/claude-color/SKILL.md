@@ -1,7 +1,7 @@
 ---
 name: claude-color
 description: Change this terminal window's background tint for the current project (claude-color plugin). Use when the user runs /claude-color, or asks to change, pick, preview, cycle, or reset the window/terminal color.
-argument-hint: "navy | slate | indigo | plum | forest | pine | olive | teal | walnut | cocoa | wine | oxblood | #hex | next | reset"
+argument-hint: "navy | slate | forest | dune | oxblood | poe | #hex | next | reset"
 allowed-tools: Bash(${CLAUDE_SKILL_DIR}/../../bin/claude-color:*), Bash(${CLAUDE_SKILL_DIR}/../../install.sh:*)
 ---
 
@@ -21,7 +21,7 @@ Run `<tool> list` and reply with the color names on one line, followed by "Type 
 
 | Arguments | Command |
 | --- | --- |
-| a palette name (navy, slate, indigo, plum, forest, pine, olive, teal, walnut, cocoa, wine, oxblood) | `<tool> <name>` |
+| a palette name (navy, slate, forest, dune, oxblood, poe) | `<tool> <name>` |
 | a hex like `#223344` | `<tool> '<hex>'` (quote it, because `#` starts a shell comment) |
 | `next` / `reset` / `list` / `rules` | `<tool> <word>` |
 | `accent` or `accent <pair\|white\|complement\|tint\|#hex>` | `<tool> accent <mode>`. This sets the bold-text and cursor color for every project. pair = a hand-picked muted complement per color (default; forest gets pale pink, navy gets muted gold), complement = vivid opposite hue, tint = same hue, white = plain white. With no mode, run `<tool> accent` and reply with its line. |
