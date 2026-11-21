@@ -31,7 +31,7 @@ Either way, open a new terminal window afterwards. Requires zsh (the macOS defau
 Inside Claude Code, in the window you're working in:
 
 ```
-/claude-color                 open the picker (your current color is listed first)
+/claude-color                 list the colors
 /claude-color plum            use a palette color
 /claude-color #2a2240         use any hex
 /claude-color something warm  describe it and Claude picks a color
@@ -39,7 +39,7 @@ Inside Claude Code, in the window you're working in:
 /claude-color reset           back to the automatic color
 ```
 
-The window changes right away, and the choice is saved for that project. Bold text and the cursor get a hand-picked muted complement of the background (pale pink on forest, muted gold on navy, seafoam on oxblood), so headings stand out without glaring. `/claude-color accent <mode>` switches to `complement` (vivid opposite hue), `tint` (same hue), `white`, or any hex, such as `'#d4b26a'`. Claude also tells you the matching built-in `/color` command, so the prompt bar can match the window.
+Simple commands like these run instantly through a prompt hook, with no reply from Claude to wait for. Descriptions like "something warm" go to Claude to interpret. The window changes right away, and the choice is saved for that project. Bold text and the cursor get a hand-picked muted complement of the background (pale pink on forest, muted gold on navy, seafoam on oxblood), so headings stand out without glaring. `/claude-color accent <mode>` switches to `complement` (vivid opposite hue), `tint` (same hue), `white`, or any hex, such as `'#d4b26a'`.
 
 | Group | Colors |
 | --- | --- |
@@ -50,7 +50,7 @@ The window changes right away, and the choice is saved for that project. Bold te
 The same works from a regular shell:
 
 ```sh
-claude-color              # this project's color + matching /color
+claude-color              # this project's color
 claude-color list         # palette with swatches
 claude-color teal         # set it (saved + applied now)
 claude-color preview '#203040'   # try it without saving

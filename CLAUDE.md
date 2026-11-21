@@ -6,8 +6,9 @@ A zsh plugin that wraps `claude` so that each project tints the terminal backgro
 
 - `claude-color.zsh`: the library plus the `claude` wrapper function. It is sourced from `~/.zshrc` and adds `bin/` to PATH.
 - `bin/claude-color`: CLI for choosing colors (set, next, reset, preview, list, and `menu`, which prints the picker data). It sources the library.
-- `skills/claude-color/SKILL.md`: the `/claude-color` skill. It calls `${CLAUDE_SKILL_DIR}/../../bin/claude-color`, which resolves both in a plugin install and through the `~/.claude/skills` symlink of a clone install. With no arguments it shows a two-step AskUserQuestion picker: current color + groups, then shades. The picker allows only 4 options per question, which is why there are 3 groups of 4.
+- `skills/claude-color/SKILL.md`: the `/claude-color` skill. It calls `${CLAUDE_SKILL_DIR}/../../bin/claude-color`, which resolves both in a plugin install and through the `~/.claude/skills` symlink of a clone install. With no arguments it lists the color names. The user found a picker menu too slow, so there's deliberately no menu.
 - `.claude-plugin/`: `plugin.json` and `marketplace.json`. The repo is both the marketplace and the plugin (`source: "./"`). **The plugin is named `terminal-tint`** because names starting with `claude-` are reserved; the skill and repo keep `claude-color`. Run `claude plugin validate .` after any change.
+- `scripts/prompt-hook.sh` (UserPromptSubmit): handles `/claude-color <name|#hex|next|reset|accent X>` instantly by blocking the prompt and returning a one-line reason, so there's no model turn. Multi-word or unknown arguments pass through to the skill. The plugin registers it in `hooks/hooks.json`; a clone install adds it to `~/.claude/settings.json`. The user explicitly does NOT want `/color` (prompt bar) suggestions: only the window changes.
 - `hooks/hooks.json` + `scripts/session-start.sh`: a SessionStart hook that tells Claude when the session wasn't launched through the wrapper (no `CLAUDE_COLOR_ACTIVE`), so it can offer `/claude-color setup`.
 - `install.sh`: idempotent. It copies the lib and bin to `~/.local/share/claude-color` (a stable path, because the plugin cache path changes with each version), points `~/.zshrc` there (replacing older lines), seeds overrides, and links the skill unless given `--no-skill`.
 - `docs/demo.gif`: synthetic, rendered with PIL and encoded with ffmpeg. It's drawn rather than screen-recorded, so no real desktop content can leak into it.
@@ -25,7 +26,6 @@ A zsh plugin that wraps `claude` so that each project tints the terminal backgro
 - **Override rules:** a pattern that starts with `/` must match the git root exactly. Anything else is a substring match. `claude-color set` rewrites that project's exact rule and moves it to the top so it beats substring rules.
 - **Palette entries are `name=#hex`.** Plain `#hex` also works for user palettes, which then have no names.
 - **zsh gotchas:** `${${x#*=}:l}`, not `${x#*=:l}`. `(#c3)` globs need `extendedglob`. `${${(On)arr}[1]}` indexes characters, not elements, so use arithmetic loops for min and max.
-- **Prompt-bar match:** `CLAUDE_COLOR_BAR` maps each palette name to a built-in `/color` value. Any hex uses its nearest palette color. A skill can't run `/color`, so Claude only suggests it.
 - It skips everything when stdout is not a TTY (`claude -p ... | jq`) or when `CLAUDE_COLOR_DISABLE` is set.
 
 ## Testing

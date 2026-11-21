@@ -17,7 +17,9 @@ dest="$HOME/.local/share/claude-color"
 mkdir -p "$dest/bin"
 cp "$here/claude-color.zsh" "$dest/"
 cp "$here/bin/claude-color" "$dest/bin/"
-chmod +x "$dest/bin/claude-color"
+mkdir -p "$dest/scripts"
+cp "$here/scripts/prompt-hook.sh" "$dest/scripts/"
+chmod +x "$dest/bin/claude-color" "$dest/scripts/prompt-hook.sh"
 echo "Installed shell plugin to $dest"
 
 rc="$HOME/.zshrc"
@@ -49,6 +51,31 @@ if (( link_skill )); then
     echo "Linked /claude-color skill into $skills"
   else
     echo "Skipped skill: $skills/claude-color already exists and is not a link"
+  fi
+fi
+
+# Instant "/claude-color <name>": a UserPromptSubmit hook in ~/.claude/settings.json.
+# (The Claude Code plugin ships this hook itself, so it's skipped with --no-skill.)
+if (( link_skill )); then
+  settings="$HOME/.claude/settings.json"
+  hook="$dest/scripts/prompt-hook.sh"
+  if command -v python3 >/dev/null 2>&1; then
+    python3 - "$settings" "$hook" <<'PY'
+import json, os, sys
+path, hook = sys.argv[1], sys.argv[2]
+d = json.load(open(path)) if os.path.exists(path) else {}
+ups = d.setdefault("hooks", {}).setdefault("UserPromptSubmit", [])
+cmds = [h.get("command", "") for e in ups for h in e.get("hooks", [])]
+if not any("prompt-hook.sh" in c and "claude-color" in c for c in cmds):
+    ups.append({"hooks": [{"type": "command", "command": f'"{hook}"'}]})
+    json.dump(d, open(path, "w"), indent=2)
+    open(path, "a").write("\n")
+    print(f"Added instant /claude-color hook to {path}")
+else:
+    print(f"Instant /claude-color hook already in {path}")
+PY
+  else
+    echo "python3 not found: add a UserPromptSubmit hook running \"$hook\" to $settings for instant /claude-color"
   fi
 fi
 

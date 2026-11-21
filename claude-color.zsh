@@ -45,14 +45,6 @@ typeset -gA CLAUDE_COLOR_PAIRS
   walnut '#a9c4dc'  cocoa '#a8ccc8'   wine '#b2d2b6'    oxblood '#a6cfc2'
 )
 
-# Closest color for Claude Code's built-in /color, which tints the prompt bar.
-typeset -gA CLAUDE_COLOR_BAR
-(( ${#CLAUDE_COLOR_BAR} )) || CLAUDE_COLOR_BAR=(
-  navy blue  slate blue  indigo purple  plum purple
-  forest green  pine green  olive green  teal cyan
-  walnut orange  cocoa orange  wine pink  oxblood red
-)
-
 # Put bin/ on PATH for interactive shells.
 [[ :$PATH: == *:$CLAUDE_COLOR_HOME/bin:* ]] || path+=("$CLAUDE_COLOR_HOME/bin")
 
@@ -124,7 +116,7 @@ _claude_color_resolve() {
   return 1
 }
 
-# Nearest palette name to any hex (by RGB distance), for the /color mapping.
+# Nearest palette name to any hex (by RGB distance), for accent pairs.
 _claude_color_nearest() {
   local h=${1#\#} entry e best="" bestd=999999 d
   local r=$((16#${h[1,2]})) g=$((16#${h[3,4]})) b=$((16#${h[5,6]}))
@@ -135,12 +127,6 @@ _claude_color_nearest() {
     (( d < bestd )) && { bestd=$d; best=${entry%%=*}; }
   done
   [[ -n $best ]] && print -r -- "$best"
-}
-
-# Matching /color value for a hex, if any.
-_claude_color_bar_for() {
-  local n; n=$(_claude_color_nearest "$1") || return 1
-  [[ -n ${CLAUDE_COLOR_BAR[$n]} ]] && print -r -- "${CLAUDE_COLOR_BAR[$n]}"
 }
 
 # ---------------------------------------------------------------- applying

@@ -41,10 +41,9 @@ save_rule() {  # replace this project's exact rule, put it first so it wins
 }
 
 status() {
-  local hex src bar
+  local hex src
   if hex=$(_claude_color_override "$key"); then src="override"; else hex=$(_claude_color_pick "$key"); src="automatic"; fi
   swatch $hex; print -r -- "$(describe $hex)  [$src]  $key"
-  bar=$(_claude_color_bar_for $hex) && print -r -- "matching prompt bar: /color $bar"
 }
 
 # Machine-readable picker data for the /claude-color skill.
@@ -52,7 +51,6 @@ menu() {
   local hex src group label names n entry
   if hex=$(_claude_color_override "$key"); then src="saved"; else hex=$(_claude_color_pick "$key"); src="automatic"; fi
   print -r -- "current: $(_claude_color_name_of $hex || print custom) $hex $src"
-  print -r -- "bar: $(_claude_color_bar_for $hex)"
   print -r -- "project: ${key:t}"
   if (( ${#CLAUDE_COLOR_GROUPS} )); then
     for group in $CLAUDE_COLOR_GROUPS; do
