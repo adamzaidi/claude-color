@@ -23,7 +23,7 @@ typeset -g CLAUDE_COLOR_HOME=${${(%):-%x}:P:h}
 typeset -ga CLAUDE_COLOR_PALETTE
 (( ${#CLAUDE_COLOR_PALETTE} )) || CLAUDE_COLOR_PALETTE=(
   navy=#1b2a3d   slate=#1f2f3a   forest=#1a3328
-  dune=#3b3122   oxblood=#3b1f1f poe=#231a35
+  dune=#4d402d   oxblood=#3b1f1f poe=#231a35
 )
 
 # Groups for the /claude-color picker ("Label:name name ..."). At most 4 names

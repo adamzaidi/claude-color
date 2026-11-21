@@ -45,7 +45,7 @@ Simple commands like these are applied by a prompt hook the instant you press En
 | navy | `#1b2a3d` deep blue | Navy Midshipmen gold `#C5B783` |
 | slate | `#1f2f3a` blue-gray | Auburn orange `#E87722` |
 | forest | `#1a3328` deep green | Oregon yellow `#FEE123` |
-| dune | `#3b3122` dark desert sand | Wyoming gold `#FFC425` |
+| dune | `#4d402d` desert sand | Wyoming gold `#FFC425` |
 | oxblood | `#3b1f1f` deep red | Oklahoma cream `#FDF9D8` |
 | poe | `#231a35` raven-black purple | LSU gold `#FDD023` |
 
