@@ -8,7 +8,7 @@
 #   claude-color reset           go back to the automatic color
 #   claude-color preview <c>     apply now without saving
 #   claude-color rules           print the overrides file
-#   claude-color accent <mode>   bold/cursor color: white, complement, tint, #hex
+#   claude-color accent <mode>   bold/cursor: pair, white, complement, tint, #hex
 #   claude-color menu            picker data (used by the /claude-color skill)
 
 source "${0:P:h}/../claude-color.zsh"
@@ -95,11 +95,11 @@ case ${1:-} in
     menu ;;
   accent)
     if [[ -z ${2:-} ]]; then
-      print -r -- "accent: $(_claude_color_accent_mode)  (white | complement | tint | #hex)"
+      print -r -- "accent: $(_claude_color_accent_mode)  (pair | white | complement | tint | #hex)"
     else
       case $2 in
-        white|complement|tint) mode=$2 ;;
-        *) mode=$(_claude_color_resolve "$2") || { print -u2 "Unknown accent: $2  (white | complement | tint | #hex)"; exit 1; } ;;
+        pair|white|complement|tint) mode=$2 ;;
+        *) mode=$(_claude_color_resolve "$2") || { print -u2 "Unknown accent: $2  (pair | white | complement | tint | #hex)"; exit 1; } ;;
       esac
       mkdir -p "${CLAUDE_COLOR_ACCENT_FILE:h}"; print -r -- "$mode" > "$CLAUDE_COLOR_ACCENT_FILE"
       hex=$(_claude_color_pick "$key"); paint $hex

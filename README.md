@@ -39,7 +39,7 @@ Inside Claude Code, in the window you're working in:
 /claude-color reset           back to the automatic color
 ```
 
-The window changes right away, and the choice is saved for that project. Bold text and the cursor turn white, with regular text a touch dimmer, so bold stands out the way black does on a white background. `/claude-color accent complement` switches to the opposite hue (pale amber on navy), and `accent tint` to a pale version of the same hue. Claude also tells you the matching built-in `/color` command, so the prompt bar can match the window.
+The window changes right away, and the choice is saved for that project. Bold text and the cursor get a hand-picked muted complement of the background (pale pink on forest, muted gold on navy, seafoam on oxblood), so headings stand out without glaring. `/claude-color accent <mode>` switches to `complement` (vivid opposite hue), `tint` (same hue), `white`, or any hex, such as `'#d4b26a'`. Claude also tells you the matching built-in `/color` command, so the prompt bar can match the window.
 
 | Group | Colors |
 | --- | --- |
@@ -54,7 +54,7 @@ claude-color              # this project's color + matching /color
 claude-color list         # palette with swatches
 claude-color teal         # set it (saved + applied now)
 claude-color preview '#203040'   # try it without saving
-claude-color accent complement   # bold/cursor: white | complement | tint | #hex
+claude-color accent complement   # bold/cursor: pair | white | complement | tint | #hex
 claude-color next | reset | rules
 ```
 
@@ -86,7 +86,8 @@ Put these in `~/.zshrc` before the `source` line:
 | `CLAUDE_COLOR_PALETTE=(name=#hex ...)` | Use your own colors |
 | `CLAUDE_COLOR_GROUPS=("Label:name name" ...)` | Groups shown in the picker (max 4 colors each) |
 | `CLAUDE_COLOR_TEXT="#hex"` | Regular text color while tinted |
-| `CLAUDE_COLOR_ACCENT=mode` | Bold and cursor: `white` (default), `complement`, `tint`, or a hex. Overrides `claude-color accent`. |
+| `CLAUDE_COLOR_ACCENT=mode` | Bold and cursor: `pair` (default), `white`, `complement`, `tint`, or a hex. Overrides `claude-color accent`. |
+| `CLAUDE_COLOR_PAIRS=(name '#hex' ...)` | Your own accent for each palette color (the `pair` mode) |
 | `CLAUDE_COLOR_CONFIG=path` | Use a different overrides file |
 
 ## Terminal support

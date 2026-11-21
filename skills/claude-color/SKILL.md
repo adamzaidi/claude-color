@@ -28,7 +28,7 @@ Arguments: `$ARGUMENTS`
 | a palette name (navy, slate, indigo, plum, forest, pine, olive, teal, walnut, cocoa, wine, oxblood) | `<tool> <name>` |
 | a hex like `#223344` | `<tool> '<hex>'` (quote it, because `#` starts a shell comment) |
 | `next` / `reset` / `list` / `rules` | `<tool> <word>` |
-| `accent` or `accent <white\|complement\|tint\|#hex>` | `<tool> accent <mode>`. This sets the bold-text and cursor color for every project. white = high-contrast white bold (default), complement = opposite hue, tint = same hue. With no mode, show the current one and those three choices with AskUserQuestion. |
+| `accent` or `accent <pair\|white\|complement\|tint\|#hex>` | `<tool> accent <mode>`. This sets the bold-text and cursor color for every project. pair = a hand-picked muted complement per color (default; forest gets pale pink, navy gets muted gold), complement = vivid opposite hue, tint = same hue, white = plain white. With no mode, show the current one and the choices pair, complement, tint and white with AskUserQuestion. |
 | `preview <color>` | `<tool> preview '<color>'` (applies without saving) |
 | `setup` | `${CLAUDE_SKILL_DIR}/../../install.sh --no-skill`, then tell them to open a new terminal window |
 | a description ("darker blue", "something warm") | choose a dark hex for it (each channel under about `#45`, so the light text stays readable) and run `<tool> '<hex>'` |

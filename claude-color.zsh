@@ -13,7 +13,7 @@
 #   CLAUDE_COLOR_CONFIG=<path>        overrides file (default ~/.config/claude-color/overrides)
 #   CLAUDE_COLOR_PALETTE=(...)        your own colors: "name=#hex" or "#hex"
 #   CLAUDE_COLOR_TEXT="#hex"          regular text color while tinted
-#   CLAUDE_COLOR_ACCENT=<mode|#hex>   bold/cursor: white, complement, tint, or a hex
+#   CLAUDE_COLOR_ACCENT=<mode|#hex>   bold/cursor: pair, white, complement, tint, or a hex
 
 typeset -g CLAUDE_COLOR_HOME=${${(%):-%x}:P:h}
 : ${CLAUDE_COLOR_CONFIG:=$HOME/.config/claude-color/overrides}
@@ -34,6 +34,15 @@ typeset -ga CLAUDE_COLOR_GROUPS
   "Blues & purples:navy slate indigo plum"
   "Greens:forest pine olive teal"
   "Warm:walnut cocoa wine oxblood"
+)
+
+# Hand-picked accent (bold text + cursor) for each palette color: a soft,
+# muted complement that stands out without glaring. Used by accent mode "pair".
+typeset -gA CLAUDE_COLOR_PAIRS
+(( ${#CLAUDE_COLOR_PAIRS} )) || CLAUDE_COLOR_PAIRS=(
+  navy '#d9b26f'    slate '#d8b98a'   indigo '#dcb877'  plum '#d6c58c'
+  forest '#e8b4bc'  pine '#e0aeb2'    olive '#c6b4dc'   teal '#e3b29a'
+  walnut '#a9c4dc'  cocoa '#a8ccc8'   wine '#b2d2b6'    oxblood '#a6cfc2'
 )
 
 # Closest color for Claude Code's built-in /color, which tints the prompt bar.
@@ -179,14 +188,15 @@ EOF
 # Accent (bold text + cursor) for a background. Modes, chosen by
 # `claude-color accent <mode>` (saved in $CLAUDE_COLOR_ACCENT_FILE) or by
 # CLAUDE_COLOR_ACCENT (a mode or a #hex):
-#   white       pure white bold over slightly dimmer text (default; the
-#               dark-background equivalent of black-on-white)
+#   pair        hand-picked muted complement per color (default; forest ->
+#               pale pink, navy -> muted gold); custom hexes use the nearest
+#   white       pure white bold over slightly dimmer text
 #   complement  the opposite hue, light (navy -> pale amber)
 #   tint        the same hue, light (navy -> pale blue)
 _claude_color_accent_mode() {
   local m=$CLAUDE_COLOR_ACCENT
   [[ -z $m && -r $CLAUDE_COLOR_ACCENT_FILE ]] && read -r m < "$CLAUDE_COLOR_ACCENT_FILE"
-  print -r -- "${m:-white}"
+  print -r -- "${m:-pair}"
 }
 
 # Light version of an rgb triple: scale until the top channel is 255, then
@@ -204,11 +214,13 @@ _claude_color_accent() {
   case $mode in
     \#*)       print -r -- "$mode" ;;
     tint)       _claude_color_lighten $r $g $b ;;
+    white)      print -r -- "#ffffff" ;;
     complement) local hi=$r lo=$r c
                 for c in $g $b; do (( c > hi )) && hi=$c; (( c < lo )) && lo=$c; done
                 s=$(( hi + lo ))  # rotate hue 180 degrees: c -> max + min - c
                 _claude_color_lighten $(( s - r )) $(( s - g )) $(( s - b )) ;;
-    *)          print -r -- "#ffffff" ;;
+    *)          local n=$(_claude_color_nearest "#$h")
+                print -r -- "${CLAUDE_COLOR_PAIRS[$n]:-#d9b26f}" ;;
   esac
 }
 
